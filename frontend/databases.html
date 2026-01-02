@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Masters - Jarvis Migration System</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/utilities.css">
+</head>
+<body>
+    <div id="header"></div>
+    <div id="sidebar"></div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Database Masters</h1>
+            <div class="page-actions">
+                <button class="btn btn-primary" onclick="showAddDatabaseModal()">
+                    ➕ Add Database Master
+                </button>
+            </div>
+        </div>
+        
+        <!-- Database Masters List -->
+        <div id="databasesContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay hidden" id="databaseModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Add Database Master</h3>
+                <button class="modal-close" onclick="closeDatabaseModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="databaseForm">
+                    <input type="hidden" id="databaseId">
+                    
+                    <div class="form-group">
+                        <label for="databaseName" class="form-label required">Name</label>
+                        <input type="text" id="databaseName" class="form-input" required placeholder="e.g., Universal Migration Service">
+                        <span class="form-help">Name of the microservice</span>
+                        <span class="form-error" id="databaseNameError"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="databaseUrl" class="form-label required">Service URL</label>
+                        <input type="url" id="databaseUrl" class="form-input" required placeholder="http://localhost:5011">
+                        <span class="form-help">Full URL of the microservice API</span>
+                        <span class="form-error" id="databaseUrlError"></span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeDatabaseModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveDatabase()">Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/components/header.js"></script>
+    <script src="js/components/sidebar.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/pages/databases.js"></script>
+</body>
+</html>
+

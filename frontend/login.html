@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Jarvis Migration System</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/utilities.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Jarvis Migration System</h1>
+                <p class="text-secondary">Sign in to your account</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username or Email</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        class="form-input" 
+                        required
+                        autocomplete="username"
+                    >
+                    <span class="form-error" id="usernameError"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-input" 
+                        required
+                        autocomplete="current-password"
+                    >
+                    <span class="form-error" id="passwordError"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-checkbox-label">
+                        <input type="checkbox" id="remember" name="remember" class="form-checkbox">
+                        <span>Remember me</span>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-lg w-full">
+                        Sign In
+                    </button>
+                </div>
+                
+                <div class="form-group text-center">
+                    <p class="text-secondary">
+                        Don't have an account? 
+                        <a href="register.html">Sign up</a>
+                    </p>
+                </div>
+            </form>
+            
+            <div id="errorMessage" class="form-error text-center mt-md hidden"></div>
+        </div>
+    </div>
+    
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/pages/login.js"></script>
+    
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: var(--spacing-lg);
+        }
+        
+        .login-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            padding: var(--spacing-xxl);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .login-header h1 {
+            color: var(--primary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .login-form {
+            margin-top: var(--spacing-lg);
+        }
+        
+        .w-full {
+            width: 100%;
+        }
+    </style>
+</body>
+</html>
+

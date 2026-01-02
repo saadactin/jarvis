@@ -1,0 +1,320 @@
+openapi: 3.0.3
+info:
+  title: SQL Server to PostgreSQL Migration API
+  description: |
+    REST API for migrating data from SQL Server databases to PostgreSQL databases.
+    Uses migration scripts from Scripts/sql_postgres/ folder.
+    Supports both full migration and incremental synchronization.
+  version: 1.0.0
+  contact:
+    name: API Support
+
+servers:
+  - url: http://localhost:5003
+    description: Development server
+  - url: https://api.example.com
+    description: Production server
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Migration
+    description: Migration operations
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Check if the service is running and healthy
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: healthy
+                service: sql_postgres_migration
+
+  /migrate/full:
+    post:
+      tags:
+        - Migration
+      summary: Full migration
+      description: |
+        Perform a complete migration of all databases and tables from SQL Server to PostgreSQL.
+        Creates schemas and tables if they don't exist and migrates all data.
+        Tables are created with schema names like {server_clean}_{database}_{schema}_{table}.
+        Uses final_full_sql_post.py script.
+      operationId: fullMigration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationRequest'
+            examples:
+              basic:
+                summary: Basic migration request
+                value:
+                  postgres:
+                    host: localhost
+                    port: 5432
+                    database: mydb
+                    username: postgres
+                    password: mypassword
+                  clickhouse:
+                    host: localhost
+                    database: analytics
+                    username: default
+                    password: clickhouse_password
+      responses:
+        '200':
+          description: Migration completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationResponse'
+              example:
+                success: true
+                databases_processed:
+                  - All databases
+                databases_failed: []
+                total_databases: 0
+                errors: []
+        '400':
+          description: Invalid request body or missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: sql_server.server is required
+        '500':
+          description: Migration failed or partial failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationResponse'
+              example:
+                success: false
+                databases_processed: []
+                databases_failed: []
+                total_databases: 0
+                errors:
+                  - Connection timeout
+
+  /migrate/incremental:
+    post:
+      tags:
+        - Migration
+      summary: Incremental migration
+      description: |
+        Perform an incremental synchronization that keeps PostgreSQL in sync with SQL Server.
+        Detects and syncs new tables, new columns, new/updated rows, deleted rows, and truncates.
+        Uses final_incre_sql_post.py script.
+      operationId: incrementalMigration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationRequest'
+            examples:
+              basic:
+                summary: Basic incremental migration request
+                value:
+                  sql_server:
+                    server: localhost\SQLEXPRESS
+                    username: sa
+                    password: sqlpassword
+                  postgres:
+                    host: localhost
+                    port: 5432
+                    database: mydb
+                    username: postgres
+                    password: mypassword
+      responses:
+        '200':
+          description: Incremental migration completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncrementalResponse'
+        '400':
+          description: Invalid request body or missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Migration failed or partial failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncrementalResponse'
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - service
+      properties:
+        status:
+          type: string
+          example: healthy
+        service:
+          type: string
+          example: sql_postgres_migration
+
+    SQLServerConfig:
+      type: object
+      required:
+        - server
+        - username
+        - password
+      properties:
+        server:
+          type: string
+          description: SQL Server hostname or IP address (supports named instances, e.g., localhost\SQLEXPRESS)
+          example: localhost\SQLEXPRESS
+        username:
+          type: string
+          description: SQL Server username (use empty string for Windows Authentication)
+          example: sa
+        password:
+          type: string
+          description: SQL Server password (use empty string for Windows Authentication)
+          format: password
+          example: sqlpassword
+
+    PostgreSQLConfig:
+      type: object
+      required:
+        - host
+        - database
+        - username
+        - password
+      properties:
+        host:
+          type: string
+          description: PostgreSQL server hostname or IP address
+          example: localhost
+        port:
+          type: integer
+          description: PostgreSQL server port
+          default: 5432
+          example: 5432
+        database:
+          type: string
+          description: PostgreSQL database name
+          example: mydb
+        username:
+          type: string
+          description: PostgreSQL username
+          example: postgres
+        password:
+          type: string
+          description: PostgreSQL password
+          format: password
+          example: mypassword
+
+    MigrationRequest:
+      type: object
+      required:
+        - sql_server
+        - postgres
+      properties:
+        sql_server:
+          $ref: '#/components/schemas/SQLServerConfig'
+        postgres:
+          $ref: '#/components/schemas/PostgreSQLConfig'
+
+    FailedTable:
+      type: object
+      properties:
+        table:
+          type: string
+          example: products
+        error:
+          type: string
+          example: Connection timeout
+
+    MigrationResponse:
+      type: object
+      required:
+        - success
+        - databases_processed
+        - databases_failed
+        - total_databases
+        - errors
+      properties:
+        success:
+          type: boolean
+          description: Whether the migration completed without errors
+        databases_processed:
+          type: array
+          items:
+            type: string
+          description: List of successfully processed database names
+        databases_failed:
+          type: array
+          items:
+            type: string
+          description: List of databases that failed to migrate
+        total_databases:
+          type: integer
+          description: Total number of databases processed
+        errors:
+          type: array
+          items:
+            type: string
+          description: List of error messages
+
+    IncrementalResponse:
+      type: object
+      required:
+        - success
+        - databases_processed
+        - databases_failed
+        - total_databases
+        - errors
+      properties:
+        success:
+          type: boolean
+          description: Whether the synchronization completed without errors
+        databases_processed:
+          type: array
+          items:
+            type: string
+          description: List of successfully processed database names
+        databases_failed:
+          type: array
+          items:
+            type: string
+          description: List of databases that failed to sync
+        total_databases:
+          type: integer
+          description: Total number of databases processed
+        errors:
+          type: array
+          items:
+            type: string
+          description: List of error messages
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: postgres.host is required
+

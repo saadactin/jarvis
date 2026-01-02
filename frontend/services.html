@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Manager - Jarvis Migration System</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/utilities.css">
+</head>
+<body>
+    <div id="header"></div>
+    <div id="sidebar"></div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Service Manager</h1>
+        </div>
+        
+        <!-- Informational Message -->
+        <div class="card mb-lg" style="background: #e3f2fd; border-left: 4px solid #2196f3;">
+            <div class="card-body">
+                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                    <div style="font-size: 24px;">ℹ️</div>
+                    <div>
+                        <div style="font-weight: 500; margin-bottom: var(--spacing-xs);">Services Auto-Start</div>
+                        <div class="text-sm" style="color: var(--text-secondary);">
+                            Services automatically start when the main backend starts. To restart services, restart the main backend.
+                            This page shows the current status of all services.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Service Status Dashboard -->
+        <div id="serviceStatsContainer" class="mb-lg"></div>
+        
+        <!-- Services Grid -->
+        <div id="servicesContainer"></div>
+    </div>
+    
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/components/header.js"></script>
+    <script src="js/components/sidebar.js"></script>
+    <script src="js/components/statusBadge.js"></script>
+    <script src="js/components/statsCard.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/pages/services.js"></script>
+</body>
+</html>
+

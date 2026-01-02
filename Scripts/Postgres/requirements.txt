@@ -1,0 +1,4 @@
+psycopg2-binary==2.9.9
+clickhouse-connect==0.6.23
+python-dotenv==1.0.0
+

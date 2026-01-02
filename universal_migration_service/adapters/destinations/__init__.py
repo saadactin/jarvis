@@ -1,0 +1,4 @@
+"""
+Destination adapters package
+"""
+

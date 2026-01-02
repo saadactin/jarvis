@@ -1,0 +1,298 @@
+openapi: 3.0.3
+info:
+  title: PostgreSQL to ClickHouse Migration API
+  description: |
+    REST API for migrating data from PostgreSQL databases to ClickHouse databases.
+    Supports both full migration and incremental synchronization.
+  version: 1.0.0
+  contact:
+    name: API Support
+
+servers:
+  - url: http://localhost:5001
+    description: Development server
+  - url: https://api.example.com
+    description: Production server
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Migration
+    description: Migration operations
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Check if the service is running and healthy
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: healthy
+                service: postgres_migration
+
+  /migrate/full:
+    post:
+      tags:
+        - Migration
+      summary: Full migration
+      description: |
+        Perform a complete migration of all tables from PostgreSQL to ClickHouse.
+        Creates tables if they don't exist and migrates all data.
+        Tables in ClickHouse will be prefixed with HR_.
+      operationId: fullMigration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationRequest'
+            examples:
+              basic:
+                summary: Basic migration request
+                value:
+                  postgres:
+                    host: localhost
+                    port: 5432
+                    database: mydb
+                    username: postgres
+                    password: mypassword
+                  clickhouse:
+                    host: localhost
+                    database: analytics
+                    username: default
+                    password: clickhouse_password
+      responses:
+        '200':
+          description: Migration completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationResponse'
+              example:
+                success: true
+                tables_migrated:
+                  - users
+                  - orders
+                  - products
+                tables_failed: []
+                total_tables: 3
+                errors: []
+        '400':
+          description: Invalid request body or missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: postgres.host is required
+        '500':
+          description: Migration failed or partial failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationResponse'
+              example:
+                success: false
+                tables_migrated:
+                  - users
+                tables_failed:
+                  - table: products
+                    error: Connection timeout
+                total_tables: 2
+                errors:
+                  - products: Connection timeout
+
+  /migrate/incremental:
+    post:
+      tags:
+        - Migration
+      summary: Incremental migration
+      description: |
+        Perform an incremental migration that only inserts new rows.
+        Compares existing data in ClickHouse to avoid duplicates.
+        Uses primary keys for duplicate detection when available.
+      operationId: incrementalMigration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationRequest'
+            examples:
+              basic:
+                summary: Basic incremental migration request
+                value:
+                  postgres:
+                    host: localhost
+                    port: 5432
+                    database: mydb
+                    username: postgres
+                    password: mypassword
+                  clickhouse:
+                    host: localhost
+                    database: analytics
+                    username: default
+                    password: clickhouse_password
+      responses:
+        '200':
+          description: Incremental migration completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationResponse'
+        '400':
+          description: Invalid request body or missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Migration failed or partial failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationResponse'
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - service
+      properties:
+        status:
+          type: string
+          example: healthy
+        service:
+          type: string
+          example: postgres_migration
+
+    PostgreSQLConfig:
+      type: object
+      required:
+        - host
+        - database
+        - username
+        - password
+      properties:
+        host:
+          type: string
+          description: PostgreSQL server hostname or IP address
+          example: localhost
+        port:
+          type: integer
+          description: PostgreSQL server port
+          default: 5432
+          example: 5432
+        database:
+          type: string
+          description: PostgreSQL database name
+          example: mydb
+        username:
+          type: string
+          description: PostgreSQL username
+          example: postgres
+        password:
+          type: string
+          description: PostgreSQL password
+          format: password
+          example: mypassword
+
+    ClickHouseConfig:
+      type: object
+      required:
+        - host
+        - database
+        - username
+        - password
+      properties:
+        host:
+          type: string
+          description: ClickHouse server hostname or IP address
+          example: localhost
+        database:
+          type: string
+          description: ClickHouse database name
+          example: analytics
+        username:
+          type: string
+          description: ClickHouse username
+          example: default
+        password:
+          type: string
+          description: ClickHouse password
+          format: password
+          example: clickhouse_password
+
+    MigrationRequest:
+      type: object
+      required:
+        - postgres
+        - clickhouse
+      properties:
+        postgres:
+          $ref: '#/components/schemas/PostgreSQLConfig'
+        clickhouse:
+          $ref: '#/components/schemas/ClickHouseConfig'
+
+    FailedTable:
+      type: object
+      properties:
+        table:
+          type: string
+          example: products
+        error:
+          type: string
+          example: Connection timeout
+
+    MigrationResponse:
+      type: object
+      required:
+        - success
+        - tables_migrated
+        - tables_failed
+        - total_tables
+        - errors
+      properties:
+        success:
+          type: boolean
+          description: Whether the migration completed without errors
+        tables_migrated:
+          type: array
+          items:
+            type: string
+          description: List of successfully migrated table names
+        tables_failed:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedTable'
+          description: List of tables that failed to migrate
+        total_tables:
+          type: integer
+          description: Total number of tables processed
+        errors:
+          type: array
+          items:
+            type: string
+          description: List of error messages
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: postgres.host is required
+

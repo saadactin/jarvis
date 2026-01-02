@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Jarvis Migration System</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/utilities.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Create Account</h1>
+                <p class="text-secondary">Sign up to get started</p>
+            </div>
+            
+            <form id="registerForm" class="login-form">
+                <div class="form-group">
+                    <label for="username" class="form-label required">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        class="form-input" 
+                        required
+                        autocomplete="username"
+                        minlength="3"
+                    >
+                    <span class="form-error" id="usernameError"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label required">Email</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="form-input" 
+                        required
+                        autocomplete="email"
+                    >
+                    <span class="form-error" id="emailError"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label required">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-input" 
+                        required
+                        autocomplete="new-password"
+                        minlength="6"
+                    >
+                    <span class="form-error" id="passwordError"></span>
+                    <span class="form-help">Must be at least 6 characters</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label required">Confirm Password</label>
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        class="form-input" 
+                        required
+                        autocomplete="new-password"
+                    >
+                    <span class="form-error" id="confirmPasswordError"></span>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-lg w-full">
+                        Create Account
+                    </button>
+                </div>
+                
+                <div class="form-group text-center">
+                    <p class="text-secondary">
+                        Already have an account? 
+                        <a href="login.html">Sign in</a>
+                    </p>
+                </div>
+            </form>
+            
+            <div id="errorMessage" class="form-error text-center mt-md hidden"></div>
+        </div>
+    </div>
+    
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/pages/register.js"></script>
+    
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: var(--spacing-lg);
+        }
+        
+        .login-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            padding: var(--spacing-xxl);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .login-header h1 {
+            color: var(--primary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .login-form {
+            margin-top: var(--spacing-lg);
+        }
+        
+        .w-full {
+            width: 100%;
+        }
+    </style>
+</body>
+</html>
+

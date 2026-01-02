@@ -1,0 +1,319 @@
+openapi: 3.0.3
+info:
+  title: Zoho API to ClickHouse Migration API
+  description: |
+    REST API for syncing data from Zoho CRM to ClickHouse databases.
+    Supports full synchronization of all modules or selected modules.
+  version: 1.0.0
+  contact:
+    name: API Support
+
+servers:
+  - url: http://localhost:5002
+    description: Development server
+  - url: https://api.example.com
+    description: Production server
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Sync
+    description: Synchronization operations
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Check if the service is running and healthy
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: healthy
+                service: zoho_migration
+
+  /sync/full:
+    post:
+      tags:
+        - Sync
+      summary: Full sync
+      description: |
+        Perform a complete synchronization of all records from Zoho CRM modules to ClickHouse.
+        Fetches all records from specified modules (or all modules if none specified) and stores them in ClickHouse.
+        Tables in ClickHouse will be prefixed with zoho_.
+      operationId: fullSync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncRequest'
+            examples:
+              selectedModules:
+                summary: Sync selected modules
+                value:
+                  zoho:
+                    refresh_token: "1000.abc123def456ghi789"
+                    client_id: "1000.ABCD1234EFGH5678"
+                    client_secret: "abc123def456ghi789jkl012mno345pqr"
+                    api_domain: "https://www.zohoapis.in"
+                  clickhouse:
+                    host: localhost
+                    database: zoho_crm
+                    username: default
+                    password: clickhouse_password
+                  selected_modules:
+                    - Accounts
+                    - Contacts
+                    - Deals
+              allModules:
+                summary: Sync all modules
+                value:
+                  zoho:
+                    refresh_token: "1000.abc123def456ghi789"
+                    client_id: "1000.ABCD1234EFGH5678"
+                    client_secret: "abc123def456ghi789jkl012mno345pqr"
+                    api_domain: "https://www.zohoapis.in"
+                  clickhouse:
+                    host: localhost
+                    database: zoho_crm
+                    username: default
+                    password: clickhouse_password
+      responses:
+        '200':
+          description: Sync completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncResponse'
+              example:
+                success: true
+                synced_modules:
+                  - module: Accounts
+                    record_count: 1500
+                  - module: Contacts
+                    record_count: 3200
+                failed_modules: []
+                total_records: 4700
+                errors: []
+        '400':
+          description: Invalid request body or missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: zoho.refresh_token is required
+        '500':
+          description: Sync failed or partial failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncResponse'
+              example:
+                success: false
+                synced_modules:
+                  - module: Accounts
+                    record_count: 1500
+                failed_modules:
+                  - module: Contacts
+                    error: Failed to obtain access token
+                total_records: 1500
+                errors:
+                  - Contacts: Failed to obtain access token
+
+  /sync/incremental:
+    post:
+      tags:
+        - Sync
+      summary: Incremental sync
+      description: |
+        Perform an incremental synchronization of modified records from Zoho CRM to ClickHouse.
+        ⚠️ This endpoint is currently not implemented.
+      operationId: incrementalSync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncRequest'
+      responses:
+        '501':
+          description: Not implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Incremental sync not yet implemented. Please use /sync/full endpoint.
+                success: false
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - service
+      properties:
+        status:
+          type: string
+          example: healthy
+        service:
+          type: string
+          example: zoho_migration
+
+    ZohoConfig:
+      type: object
+      required:
+        - refresh_token
+        - client_id
+        - client_secret
+      properties:
+        refresh_token:
+          type: string
+          description: Zoho OAuth refresh token
+          example: "1000.abc123def456ghi789"
+        client_id:
+          type: string
+          description: Zoho OAuth client ID
+          example: "1000.ABCD1234EFGH5678"
+        client_secret:
+          type: string
+          description: Zoho OAuth client secret
+          format: password
+          example: "abc123def456ghi789jkl012mno345pqr"
+        api_domain:
+          type: string
+          description: Zoho API domain based on region
+          enum:
+            - https://www.zohoapis.in
+            - https://www.zohoapis.com
+            - https://www.zohoapis.eu
+            - https://www.zohoapis.com.au
+            - https://www.zohoapis.jp
+          default: https://www.zohoapis.in
+          example: https://www.zohoapis.in
+
+    ClickHouseConfig:
+      type: object
+      required:
+        - host
+        - database
+        - username
+        - password
+      properties:
+        host:
+          type: string
+          description: ClickHouse server hostname or IP address
+          example: localhost
+        database:
+          type: string
+          description: ClickHouse database name
+          example: zoho_crm
+        username:
+          type: string
+          description: ClickHouse username
+          example: default
+        password:
+          type: string
+          description: ClickHouse password
+          format: password
+          example: clickhouse_password
+
+    SyncRequest:
+      type: object
+      required:
+        - zoho
+        - clickhouse
+      properties:
+        zoho:
+          $ref: '#/components/schemas/ZohoConfig'
+        clickhouse:
+          $ref: '#/components/schemas/ClickHouseConfig'
+        selected_modules:
+          type: array
+          items:
+            type: string
+          description: List of module names to sync. If not provided, all modules will be synced.
+          example:
+            - Accounts
+            - Contacts
+            - Deals
+
+    SyncedModule:
+      type: object
+      properties:
+        module:
+          type: string
+          description: Module name
+          example: Accounts
+        record_count:
+          type: integer
+          description: Number of records synced
+          example: 1500
+
+    FailedModule:
+      type: object
+      properties:
+        module:
+          type: string
+          description: Module name
+          example: Contacts
+        error:
+          type: string
+          description: Error message
+          example: Failed to obtain access token
+
+    SyncResponse:
+      type: object
+      required:
+        - success
+        - synced_modules
+        - failed_modules
+        - total_records
+        - errors
+      properties:
+        success:
+          type: boolean
+          description: Whether the sync completed without errors
+        synced_modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/SyncedModule'
+          description: List of successfully synced modules
+        failed_modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedModule'
+          description: List of modules that failed to sync
+        total_records:
+          type: integer
+          description: Total number of records synced across all modules
+        errors:
+          type: array
+          items:
+            type: string
+          description: List of error messages
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: zoho.refresh_token is required
+        success:
+          type: boolean
+          description: Success status (always false for errors)
+          example: false
+

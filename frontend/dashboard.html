@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Jarvis Migration System</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/utilities.css">
+</head>
+<body>
+    <div id="header"></div>
+    <div id="sidebar"></div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Dashboard</h1>
+            <div class="page-actions">
+                <a href="create-operation.html" class="btn btn-primary">
+                    ➕ Create Operation
+                </a>
+            </div>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div id="statsContainer"></div>
+        
+        <!-- Recent Operations -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Recent Operations</h2>
+                <a href="operations.html" class="btn btn-outline btn-sm">View All</a>
+            </div>
+            <div class="card-body">
+                <div id="recentOperationsContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/components/header.js"></script>
+    <script src="js/components/sidebar.js"></script>
+    <script src="js/components/statsCard.js"></script>
+    <script src="js/components/statusBadge.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/pages/dashboard.js"></script>
+</body>
+</html>
+

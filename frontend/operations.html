@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operations - Jarvis Migration System</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/utilities.css">
+</head>
+<body>
+    <div id="header"></div>
+    <div id="sidebar"></div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Operations</h1>
+            <div class="page-actions">
+                <a href="create-operation.html" class="btn btn-primary">
+                    ➕ Create Operation
+                </a>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="card mb-lg">
+            <div class="card-body">
+                <div class="d-flex gap-md flex-wrap">
+                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                        <label for="statusFilter" class="form-label">Status</label>
+                        <select id="statusFilter" class="form-select">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="running">Running</option>
+                            <option value="completed">Completed</option>
+                            <option value="failed">Failed</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                        <label for="typeFilter" class="form-label">Type</label>
+                        <select id="typeFilter" class="form-select">
+                            <option value="">All Types</option>
+                            <option value="full">Full</option>
+                            <option value="incremental">Incremental</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                        <label for="searchInput" class="form-label">Search</label>
+                        <input type="text" id="searchInput" class="form-input" placeholder="Search operations...">
+                    </div>
+                    
+                    <div class="form-group d-flex align-end">
+                        <button id="clearFilters" class="btn btn-secondary">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Operations Table -->
+        <div class="card">
+            <div class="card-body">
+                <div id="operationsContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/config.js?v=2"></script>
+    <script src="js/utils.js?v=2"></script>
+    <script src="js/auth.js?v=2"></script>
+    <script src="js/api.js?v=2"></script>
+    <script src="js/components/header.js?v=2"></script>
+    <script src="js/components/sidebar.js?v=2"></script>
+    <script src="js/components/statusBadge.js?v=2"></script>
+    <script src="js/components/modal.js?v=2"></script>
+    <script src="js/app.js?v=2"></script>
+    <script src="js/pages/operations.js?v=2"></script>
+</body>
+</html>
+

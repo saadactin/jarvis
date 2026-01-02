@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Operation - Jarvis Migration System</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/utilities.css">
+</head>
+<body>
+    <div id="header"></div>
+    <div id="sidebar"></div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <div>
+                <a href="operations.html" class="text-secondary">← Back to Operations</a>
+                <h1 class="page-title mt-sm">Create Migration Operation</h1>
+            </div>
+        </div>
+        
+        <!-- Wizard Progress -->
+        <div class="card mb-lg">
+            <div class="card-body">
+                <div class="wizard-progress">
+                    <div class="wizard-step" data-step="1">
+                        <div class="wizard-step-number">1</div>
+                        <div class="wizard-step-label">Source</div>
+                    </div>
+                    <div class="wizard-step" data-step="2">
+                        <div class="wizard-step-number">2</div>
+                        <div class="wizard-step-label">Destination</div>
+                    </div>
+                    <div class="wizard-step" data-step="3">
+                        <div class="wizard-step-number">3</div>
+                        <div class="wizard-step-label">Source Config</div>
+                    </div>
+                    <div class="wizard-step" data-step="4">
+                        <div class="wizard-step-number">4</div>
+                        <div class="wizard-step-label">Dest Config</div>
+                    </div>
+                    <div class="wizard-step" data-step="5">
+                        <div class="wizard-step-number">5</div>
+                        <div class="wizard-step-label">Schedule</div>
+                    </div>
+                    <div class="wizard-step" data-step="6">
+                        <div class="wizard-step-number">6</div>
+                        <div class="wizard-step-label">Review</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wizard Content -->
+        <div class="card">
+            <div class="card-body">
+                <form id="operationForm">
+                    <!-- Step 1: Source Selection -->
+                    <div class="wizard-content" id="step1">
+                        <h2 class="mb-lg">Select Source Database</h2>
+                        <div class="source-grid" id="sourceSelection"></div>
+                        <div class="form-error" id="sourceError"></div>
+                    </div>
+                    
+                    <!-- Step 2: Destination Selection -->
+                    <div class="wizard-content hidden" id="step2">
+                        <h2 class="mb-lg">Select Destination Database</h2>
+                        <div class="destination-grid" id="destinationSelection"></div>
+                        <div class="form-error" id="destinationError"></div>
+                    </div>
+                    
+                    <!-- Step 3: Source Configuration -->
+                    <div class="wizard-content hidden" id="step3">
+                        <h2 class="mb-lg">Source Configuration</h2>
+                        <div id="sourceConfigForm"></div>
+                    </div>
+                    
+                    <!-- Step 4: Destination Configuration -->
+                    <div class="wizard-content hidden" id="step4">
+                        <h2 class="mb-lg">Destination Configuration</h2>
+                        <div id="destinationConfigForm"></div>
+                    </div>
+                    
+                    <!-- Step 5: Schedule -->
+                    <div class="wizard-content hidden" id="step5">
+                        <h2 class="mb-lg">Schedule & Type</h2>
+                        <div class="form-group">
+                            <label for="operationType" class="form-label required">Operation Type</label>
+                            <select id="operationType" name="operationType" class="form-select" required>
+                                <option value="">Select type</option>
+                                <option value="full">Full Migration</option>
+                                <option value="incremental">Incremental Migration</option>
+                            </select>
+                            <span class="form-error" id="operationTypeError"></span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="scheduleDate" class="form-label required">Schedule Date</label>
+                            <input type="date" id="scheduleDate" name="scheduleDate" class="form-input" required>
+                            <span class="form-error" id="scheduleDateError"></span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="scheduleTime" class="form-label required">Schedule Time</label>
+                            <input type="time" id="scheduleTime" name="scheduleTime" class="form-input" required>
+                            <span class="form-error" id="scheduleTimeError"></span>
+                        </div>
+                        
+                        <div class="form-group" id="lastSyncTimeGroup" style="display: none;">
+                            <label for="lastSyncTime" class="form-label">Last Sync Time (for incremental)</label>
+                            <input type="datetime-local" id="lastSyncTime" name="lastSyncTime" class="form-input">
+                            <span class="form-help">Leave empty to sync all data</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 6: Review -->
+                    <div class="wizard-content hidden" id="step6">
+                        <h2 class="mb-lg">Review & Submit</h2>
+                        <div id="reviewContent"></div>
+                    </div>
+                    
+                    <!-- Navigation Buttons -->
+                    <div class="wizard-navigation mt-lg">
+                        <button type="button" class="btn btn-secondary" id="prevButton" onclick="previousStep()" style="display: none;">Previous</button>
+                        <button type="button" class="btn btn-primary" id="nextButton" onclick="nextStep()">Next</button>
+                        <button type="submit" class="btn btn-success hidden" id="submitButton">Create Operation</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/config.js?v=2"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/components/header.js"></script>
+    <script src="js/components/sidebar.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/pages/createOperation.js"></script>
+    
+    <style>
+        .wizard-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .wizard-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .wizard-step::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: var(--border);
+            z-index: -1;
+        }
+        
+        .wizard-step:last-child::after {
+            display: none;
+        }
+        
+        .wizard-step.active .wizard-step-number {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .wizard-step.completed .wizard-step-number {
+            background: var(--success);
+            color: white;
+        }
+        
+        .wizard-step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--border);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-sm);
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .wizard-step-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+        
+        .wizard-step.active .wizard-step-label {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .wizard-content {
+            min-height: 400px;
+        }
+        
+        .wizard-navigation {
+            display: flex;
+            justify-content: space-between;
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border);
+        }
+        
+        .source-grid,
+        .destination-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .source-option,
+        .destination-option {
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .source-option:hover,
+        .destination-option:hover {
+            border-color: var(--primary);
+            background: var(--background);
+        }
+        
+        .source-option.selected,
+        .destination-option.selected {
+            border-color: var(--primary);
+            background: rgba(25, 118, 210, 0.1);
+        }
+        
+        .source-option-icon,
+        .destination-option-icon {
+            font-size: 48px;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .source-option-label,
+        .destination-option-label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+    </style>
+</body>
+</html>
+

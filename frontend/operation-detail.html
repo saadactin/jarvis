@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operation Details - Jarvis Migration System</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/utilities.css">
+</head>
+<body>
+    <div id="header"></div>
+    <div id="sidebar"></div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <div>
+                <a href="operations.html" class="text-secondary">← Back to Operations</a>
+                <h1 class="page-title mt-sm">Operation #<span id="operationId">-</span></h1>
+            </div>
+            <div class="page-actions" id="operationActions"></div>
+        </div>
+        
+        <!-- Operation Status -->
+        <div class="card mb-lg">
+            <div class="card-body">
+                <div class="d-flex justify-between align-center flex-wrap gap-md">
+                    <div>
+                        <div class="mb-sm">
+                            <span class="text-secondary">Status: </span>
+                            <span id="operationStatus"></span>
+                        </div>
+                        <div class="mb-sm">
+                            <span class="text-secondary">Type: </span>
+                            <span id="operationType"></span>
+                        </div>
+                        <div>
+                            <span class="text-secondary">Source: </span>
+                            <span id="operationSource"></span>
+                        </div>
+                    </div>
+                    <div id="operationTimeline"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Migration Results -->
+        <div class="card mb-lg" id="resultsCard" style="display: none;">
+            <div class="card-header">
+                <h2 class="card-title">Migration Results</h2>
+            </div>
+            <div class="card-body" id="resultsContainer"></div>
+        </div>
+        
+        <!-- Configuration -->
+        <div class="card mb-lg">
+            <div class="card-header">
+                <h2 class="card-title">Configuration</h2>
+            </div>
+            <div class="card-body" id="configContainer"></div>
+        </div>
+        
+        <!-- Error Message -->
+        <div class="card" id="errorCard" style="display: none;">
+            <div class="card-body">
+                <div class="text-error">
+                    <strong>Error:</strong>
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/components/header.js"></script>
+    <script src="js/components/sidebar.js"></script>
+    <script src="js/components/statusBadge.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/pages/operationDetail.js"></script>
+</body>
+</html>
+
